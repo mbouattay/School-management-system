@@ -37,15 +37,18 @@ export class UsersService{
         const {role} = registerDto;
         if(role === 'etudiant') {
             return this.createEtudiant(registerDto);
-        } else (role === 'enseignant') 
+        }  else if (role === 'enseignant'){
             return this.createEnseignant(registerDto);
-        
+        } else{
+                return this.createAdmin(registerDto)
+        }
     }
 
     public async createEtudiant(registerDto: RegisterDto) {
-        const {email,password,nom,prenom,role,matricule,dateDeNaissance,classeId}=registerDto ;
+        const {email,nom,prenom,role,matricule,dateDeNaissance,classeId}=registerDto ;
         const userFromDb = await this.userRepository.findOne({where:{email}});
         if(userFromDb) throw new BadRequestException("user already exist ") ; 
+        const password =randomBytes(32).toString('hex')
         const hashedPassword = await this.hashPassword(password)
         let classe: Classe | undefined = undefined;
         if (classeId) {
@@ -71,9 +74,10 @@ export class UsersService{
     }
 
     public async createEnseignant(registerDto: RegisterDto) {
-        const {email,password,nom,prenom,role,specialite} = registerDto;
+        const {email,nom,prenom,role,specialite} = registerDto;
         const userFromDb = await this.userRepository.findOne({where:{email}});
-        if(userFromDb) throw new BadRequestException("user already exist ") ; 
+        if(userFromDb) throw new BadRequestException("user already exist ") ;
+        const password =randomBytes(32).toString('hex') 
         const hashedPassword = await this.hashPassword(password)
         let newEnseignant = this.enseignantRepository.create({
             email,
@@ -86,6 +90,26 @@ export class UsersService{
         });
         newEnseignant = await this.enseignantRepository.save(newEnseignant);
         const link = this.generateLink(newEnseignant.id,newEnseignant.verificationToken)
+        await this.mailService.sendVerifyEmailTemplate(email,link,password)
+        return { message: 'Verification token has been sent to your email, please verify your email address' };
+    }
+    public async createAdmin(registerDto: RegisterDto) {
+        const {email,nom,prenom,role} = registerDto;
+        const userFromDb = await this.userRepository.findOne({where:{email}});
+        if(userFromDb) throw new BadRequestException("user already exist ") ; 
+        const password =randomBytes(32).toString('hex')
+        const hashedPassword = await this.hashPassword(password)
+        let newAdmin = this.userRepository.create({
+            email,
+            nom,
+            prenom,
+            password: hashedPassword,
+            role,
+            verificationToken: randomBytes(32).toString('hex'),
+            
+        });
+        newAdmin = await this.userRepository.save(newAdmin);
+        const link = this.generateLink(newAdmin.id,newAdmin.verificationToken)
         await this.mailService.sendVerifyEmailTemplate(email,link,password)
         return { message: 'Verification token has been sent to your email, please verify your email address' };
     }

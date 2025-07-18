@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty,IsString, MinLength, IsDateString, IsInt, IsOptional } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty,IsString, IsDateString, IsInt, IsOptional } from 'class-validator';
 import { UserType } from '../../utils/enums';
 
 export class RegisterDto {
@@ -14,10 +14,6 @@ export class RegisterDto {
   @IsEmail()
   email: string;
 
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(6)
-  password: string;
 
   @IsNotEmpty()
   @IsEnum(UserType)
@@ -38,7 +34,9 @@ export class RegisterDto {
   @IsOptional()
   @IsString()
   specialite?: string;
-
+  @IsOptional()
+  @IsString()
+  grade ? : string ; 
 }
 
 

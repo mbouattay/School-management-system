@@ -1,9 +1,12 @@
-import { Body, Controller, Post, Patch, Delete, Param, Get, ParseIntPipe, HttpCode, HttpStatus, Query } from "@nestjs/common";
+import { Body, Controller, Post, Patch, Delete, Param, Get, ParseIntPipe, HttpCode, HttpStatus, Query, UseGuards } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { RegisterDto } from "./dtos/register.dto";
 import { LoginDto } from "./dtos/login.dto";
 import { UpdateEtudiantDto } from "./dtos/updateEtudiant.dto";
 import { UpdateEnseignantDto } from "./dtos/updateEnseignant.dto";
+import { Roles } from "./decorators/user-role.decorator";
+import { UserType } from "src/utils/enums";
+import { AuthRolesGuard } from "./guards/auth-roles.guard";
 @Controller('api/users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
@@ -40,7 +43,8 @@ export class UsersController {
     ) {
         return this.usersService.deleteEtudiant(id);
     }
-
+    @Roles(UserType.ADMIN)
+    @UseGuards(AuthRolesGuard)
     @Get("/etudiants")
     public getAllEtudiants() {
         return this.usersService.getAllEtudiants();

@@ -8,13 +8,12 @@ import { ConfigService } from "@nestjs/config";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 import { MailModule } from "src/mail/mail.module";
-import { ClassesModule } from "src/classes/classes.module";
 import { Classe } from '../classes/classe.entity';
+import { Admin } from "./admin.entity";
 @Module({
   imports: [
     MailModule,
-   
-    TypeOrmModule.forFeature([User, Etudiant, Enseignant, Classe]),
+    TypeOrmModule.forFeature([User, Etudiant, Enseignant, Classe,Admin]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

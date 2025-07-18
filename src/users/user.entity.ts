@@ -15,7 +15,7 @@ export class User {
     email: string;
     @Column()
     password: string;
-    @Column({ type: 'enum', enum: UserType, default: UserType.ETUDIANT })
+    @Column({ type: 'enum', enum: UserType, default: UserType.ADMIN})
     role: UserType;
     @Column({ default: false })
     isAccountVerified: boolean;

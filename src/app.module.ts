@@ -13,6 +13,12 @@ import { EmploisDeTempsModule } from './emploisDeTemps/emploisDeTemps.module';
 import { SeancesModule } from './seances/seances.module';
 import { Seance } from './seances/seance.entity';
 import { EmploiDeTemps } from './emploisDeTemps/emploiDeTemps.entity';
+import { NotesModule } from './notes/notes.module';
+import { Note } from './notes/note.entity';
+import { BulletinsModule } from './bulletins/bulletins.module';
+import { Bulletin } from './bulletins/bulletin.entity';
+import { Admin } from './users/admin.entity';
+
 @Module({
   imports: [
     UsersModule,
@@ -20,6 +26,8 @@ import { EmploiDeTemps } from './emploisDeTemps/emploiDeTemps.entity';
     MatieresModule,
     EmploisDeTempsModule,
     SeancesModule,
+    NotesModule,
+    BulletinsModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
@@ -30,7 +38,7 @@ import { EmploiDeTemps } from './emploisDeTemps/emploiDeTemps.entity';
           username: config.get<string>("DB_USERNAME"),
           password: config.get<string>("DB_PASSWORD"),
           database: config.get<string>("DB_DATABASE"),
-          entities: [User,Enseignant,Etudiant,Classe,Matiere,Seance,EmploiDeTemps],
+          entities: [User,Enseignant,Etudiant,Classe,Matiere,Seance,EmploiDeTemps,Note,Bulletin,Admin],
           synchronize: true,
         }
       }
