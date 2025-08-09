@@ -3,7 +3,7 @@ import { NotesService } from "./notes.service";
 import { CreateNoteDto } from "./dtos/createNote.dto";
 import { UpdateNoteDto } from "./dtos/updateNote.dto";
 
-@Controller('notes')
+@Controller('api/notes')
 export class NotesController {
     constructor (private readonly notesService : NotesService){}
     @Post()

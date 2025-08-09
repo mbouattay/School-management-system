@@ -150,6 +150,7 @@ export class UsersService{
           user.verificationToken = "null";
           await this.userRepository.save(user);
           return { message: "Your email has been verified, please log in to your account" };
+          
 
     }
     public async getCurrentUser(id: number) {
@@ -173,10 +174,17 @@ export class UsersService{
     public async updateEtudiant(id: number, updateDto: UpdateEtudiantDto) {
         const etudiant = await this.etudiantRepository.findOne({ where: { id } });
         if (!etudiant) throw new NotFoundException("Etudiant not found");
-        if (updateDto.password) {
-            updateDto.password = await this.hashPassword(updateDto.password);
+
+        if (updateDto.classeId) {
+            const classe = await this.classeRepository.findOne({ where: { id: updateDto.classeId } });
+            if (!classe) throw new NotFoundException("Classe not found");
+            etudiant.classe = classe;
         }
-        Object.assign(etudiant, updateDto);
+
+       
+        const { classeId, ...rest } = updateDto;
+        Object.assign(etudiant, rest);
+
         return this.etudiantRepository.save(etudiant);
     }
 
@@ -235,7 +243,7 @@ export class UsersService{
     public async getAllEnseignants() {
         const enseignants = await this.enseignantRepository.find({ relations: ['seances', 'seances.emploiDeTemps', 'seances.emploiDeTemps.classe'] });
         return enseignants.map(e => {
-            // Extraire les classes uniques à partir des séances via emploiDeTemps.classe
+        
             const classesMap = new Map();
             e.seances.forEach(seance => {
                 const classe = seance.emploiDeTemps?.classe;

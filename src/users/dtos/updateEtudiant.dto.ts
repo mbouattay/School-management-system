@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsDateString, IsEmail, IsEnum, IsInt, IsOptional, IsString } from "class-validator";
 import { UserType } from "src/utils/enums";
 
 export class UpdateEtudiantDto {
@@ -13,7 +13,9 @@ export class UpdateEtudiantDto {
     @IsOptional()
     @IsEmail()
     email?: string;
-  
+    @IsOptional()
+    @IsDateString()
+    dateDeNaissance?: string;
     @IsOptional()
     @IsString()
     password?: string;
@@ -33,4 +35,7 @@ export class UpdateEtudiantDto {
     @IsOptional()
     @IsString()
     matricule?: string;
+    @IsOptional()
+    @IsInt()
+    classeId?: number;
   }

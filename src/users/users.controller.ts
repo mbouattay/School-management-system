@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Patch, Delete, Param, Get, ParseIntPipe, HttpCode, HttpStatus, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Patch, Delete, Param, Get, ParseIntPipe, HttpCode, HttpStatus, Query, UseGuards, Res } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { RegisterDto } from "./dtos/register.dto";
 import { LoginDto } from "./dtos/login.dto";
@@ -7,6 +7,7 @@ import { UpdateEnseignantDto } from "./dtos/updateEnseignant.dto";
 import { Roles } from "./decorators/user-role.decorator";
 import { UserType } from "src/utils/enums";
 import { AuthRolesGuard } from "./guards/auth-roles.guard";
+import { Response } from "express";
 @Controller('api/users')
 export class UsersController {
     constructor(private readonly usersService: UsersService) { }
@@ -21,12 +22,14 @@ export class UsersController {
     public login(@Body() body: LoginDto) {
         return this.usersService.login(body);
     }
-    @Get("verify-email/:id/:verificationToken")
-    public verifyEmail(
-        @Param('id', ParseIntPipe) id: number,
-        @Param('verificationToken') verificationToken: string
+    @Get('verify-email/:userId/:token')
+    async verifyEmail(
+      @Param('userId') userId: number,
+      @Param('token') token: string,
+      @Res() res: Response
     ) {
-        return this.usersService.verifyEmail(id, verificationToken);
+      await this.usersService.verifyEmail(userId, token);
+      return res.redirect('http://localhost:5173/login');
     }
 
     @Patch("/etudiants/:id")
@@ -43,8 +46,8 @@ export class UsersController {
     ) {
         return this.usersService.deleteEtudiant(id);
     }
-    @Roles(UserType.ADMIN)
-    @UseGuards(AuthRolesGuard)
+    /*@Roles(UserType.ADMIN)
+    @UseGuards(AuthRolesGuard)*/
     @Get("/etudiants")
     public getAllEtudiants() {
         return this.usersService.getAllEtudiants();
